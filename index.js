@@ -18,13 +18,9 @@ class FriendLink extends Plugin {
   }
 
   async onCommand() {
-    const { default: moduleDefault } = getModule(
-      (m) => m.default && m.default.createFriendInvite,
-      false
-    );
-
+    const { createFriendInvite } = getModule(["createFriendInvite"], false);
     try {
-      const { code } = await moduleDefault.createFriendInvite();
+      const { code } = await createFriendInvite();
       return {
         send: false,
         result: `https://discord.gg/${code}`,
