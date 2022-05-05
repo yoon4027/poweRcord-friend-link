@@ -1,7 +1,7 @@
 /* eslint-disable  */
 const { Plugin } = require("powercord/entities");
 const { getModule } = require("powercord/webpack");
-
+const { createFriendInvite } = getModule(["createFriendInvite"], false);
 class FriendLink extends Plugin {
   startPlugin() {
     powercord.api.commands.registerCommand({
@@ -18,7 +18,6 @@ class FriendLink extends Plugin {
   }
 
   async onCommand() {
-    const { createFriendInvite } = getModule(["createFriendInvite"], false);
     try {
       const { code } = await createFriendInvite();
       return {
