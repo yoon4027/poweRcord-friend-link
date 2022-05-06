@@ -24,7 +24,7 @@ class FriendLink extends Plugin {
     powercord.api.commands.registerCommand({
       command: "deletelinks",
       description: "Deletes all of your friend links.",
-      usage: "{c} <link id>",
+      usage: "{c}",
       executor: this.onDeleteLink.bind(this),
     });
   }
