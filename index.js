@@ -1,9 +1,13 @@
-/* eslint-disable  */
+/* eslint-disable */
+
 const { Plugin } = require("powercord/entities");
 const { getModule } = require("powercord/webpack");
+
+
 const { createFriendInvite } = getModule(["createFriendInvite"], false);
 const { getAllFriendInvites } = getModule(["getAllFriendInvites"], false);
 const { revokeFriendInvites } = getModule(["revokeFriendInvites"], false);
+
 class FriendLink extends Plugin {
   startPlugin() {
     powercord.api.commands.registerCommand({
@@ -30,7 +34,7 @@ class FriendLink extends Plugin {
   }
 
   pluginWillUnload() {
-    powercord.api.commands.unregisterCommand("flink");
+    ["deletelinks", "viewlinks", "flink"].map(v => powercord.api.commands.unregisterCommand(v));
   }
 
   async onCommand() {
@@ -38,7 +42,7 @@ class FriendLink extends Plugin {
       const { code } = await createFriendInvite();
       return {
         send: false,
-        result: `https://discord.gg/${code}`,
+        result: this.getInviteLink(code),
       };
     } catch (e) {
       this.log(e);
@@ -52,15 +56,13 @@ class FriendLink extends Plugin {
   async onViewLinks() {
     try {
       const invites = await getAllFriendInvites();
-      if (invites.length === 0) {
-        return {
-          send: false,
-          result: "You have no friend links.",
-        };
+      if (!invites.length) return {
+        send: false,
+        result: "You haven't generated any friend link."
       }
       return {
         send: false,
-        result: invites.map(invite => `https://discord.gg/${invite.code}`).join("\n"),
+        result: invites.map(invite => this.getInviteLink(invite)).join("\n"),
       };
     } catch (e) {
       this.log(e);
@@ -74,17 +76,23 @@ class FriendLink extends Plugin {
   async onDeleteLink() {
     try {
       await revokeFriendInvites();
+      
       return {
         send: false,
         result: "Successfully deleted all of your links.",
       };
     } catch (e) {
       this.log(e);
+
       return {
         send: false,
         result: "Failed to delete your links.",
       };
     }
+  }
+
+  getInviteLink(code) {
+    return `https://discord.gg/${code}`
   }
 
 }
